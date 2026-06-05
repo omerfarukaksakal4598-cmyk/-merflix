@@ -1,42 +1,50 @@
 import streamlit as st
-import os
-import random
 
-# --- SAYFA YAPILANDIRMASI ---
-st.set_page_config(page_title="ÖmerFlix Premium", layout="wide", page_icon="🍿")
+# Sayfa Ayarları
+st.set_page_config(page_title="ÖmerFlix Premium", layout="wide")
 
-# --- TASARIM ---
+# Tasarım
 st.markdown("""
     <style>
-    .netflix-logo { color: #E50914 !important; font-size: 55px; font-weight: 900; letter-spacing: 3px; }
-    .film-card { background-color: #141414; padding: 15px; border-radius: 12px; border: 1px solid #333; }
-    .stButton>button { background-color: #E50914 !important; color: white !important; font-weight: bold !important; }
+    .film-card { background: #141414; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; text-align: center; }
+    .stButton>button { background-color: #E50914 !important; color: white !important; font-weight: bold !important; width: 100%; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- SENİN DRIVE KLASÖRÜN ---
-# Buraya paylaşıma açık klasörünün linkini koyuyoruz
-DRIVE_KLASOR_LINKI = "https://drive.google.com/drive/folders/1s-y-m6SA1wLwE4uLvjhoN2gFA5yIvMMT"
+# FİLMLERİN VERİTABANI
+filmler = [
+    {"ad": "Grizzy & les Lemmings", "id": "1x39h1ne0e3esRye5dG6fZcAF6Vt_Nab6"},
+    {"ad": "Big Hero 6", "id": "1CmKZ8lXRshnBtxeAJlxlbtxLxO5xFWTR"},
+    {"ad": "Hababam Sınıfı", "id": "1fa3oRFRfAh9NJsnZb4XD-vVFyQ6gzcz4"},
+    {"ad": "Hababam Sınıfı Sınıfta Kaldı", "id": "11XY4vjYqOxXMSSPGF5bb6qfvXoStLIPj"},
+    {"ad": "Şaban Oğlu Şaban", "id": "1mEATprqTLwaKyH8wl_7gHQOPx2oFoOVY"},
+    {"ad": "Zehir (Venom)", "id": "1kQGXuE21Yy3zSVbjDxm7aWAqDCZmCQJl"}
+]
 
-st.markdown("<div class='netflix-logo'>ÖMERFLIX</div>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #E50914; text-align: center;'>ÖMERFLIX</h1>", unsafe_allow_html=True)
 st.write("---")
 
-st.info("Filmlerin Drive klasöründe! İzlemek için aşağıdaki butona tıkla, seni direkt dosyaların olduğu klasöre yönlendireceğim.")
-
-if st.button("🚀 TÜM FİLMLERİ DRIVE'DA İZLE", use_container_width=True):
-    st.markdown(f'<meta http-equiv="refresh" content="0; url={DRIVE_KLASOR_LINKI}">', unsafe_allow_html=True)
-    st.write(f"Yönlendiriliyorsun... [Tıklayarak Git]({DRIVE_KLASOR_LINKI})")
-
-st.write("---")
-st.subheader("🍿 Kütüphane Görünümü")
-col1, col2, col3 = st.columns(3)
-
-# Basit bir görselleştirme
-with col1:
-    st.image("https://image.pollinations.ai/prompt/movie%20poster%20collection?width=300&height=400", use_container_width=True)
-with col2:
-    st.image("https://image.pollinations.ai/prompt/cinema%20popcorn?width=300&height=400", use_container_width=True)
-with col3:
-    st.image("https://image.pollinations.ai/prompt/film%20reel?width=300&height=400", use_container_width=True)
-
-st.success("ÖmerFlix şu an canlı ve yayında! Arkadaşlarına linkini atabilirsin.")
+# İzleme Modu (Eğer bir film seçildiyse)
+if "secili_video" in st.session_state:
+    st.markdown(f"### 🎬 {st.session_state.secili_ad}")
+    # Drive Preview Linki
+    embed_url = f"https://drive.google.com/file/d/{st.session_state.secili_id}/preview"
+    st.components.v1.iframe(embed_url, height=500, scrolling=True)
+    if st.button("⬅️ Kütüphaneye Dön"):
+        del st.session_state.secili_video
+        st.rerun()
+else:
+    # Film Listesi
+    cols = st.columns(3)
+    for i, film in enumerate(filmler):
+        with cols[i % 3]:
+            st.markdown("<div class='film-card'>", unsafe_allow_html=True)
+            # Otomatik kapak görseli
+            st.image(f"https://image.pollinations.ai/prompt/movie%20poster%20{film['ad'].replace(' ', '%20')}?width=300&height=400")
+            st.subheader(film['ad'])
+            if st.button(f"▶️ İZLE", key=film['ad']):
+                st.session_state.secili_video = True
+                st.session_state.secili_id = film['id']
+                st.session_state.secili_ad = film['ad']
+                st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
