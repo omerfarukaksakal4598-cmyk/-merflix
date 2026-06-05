@@ -174,7 +174,7 @@ elif aktif_filmler and secilen_kategori == "Tümü":
 st.markdown("### 🍿 İzlemeye Devam Et")
 
 if not aktif_filmler:
-    st.info("Kütüphanen henüz boş. 'filmler' klasörüne video dosyaları ekleyebilirsin!")
+    st.info("Kütüphanen henüz boş. İnternette yayında olduğu için GitHub depondaki projene bir 'filmler' klasörü açıp içine 1-2 MB'lık deneme videoları atabilirsin!")
 else:
     cols = st.columns(3)
     gosterilen_sayi = 0
@@ -188,7 +188,9 @@ else:
                 st.markdown(f"<h4 style='margin-top: 10px; margin-bottom: 5px;'>{veri['adi']}</h4>", unsafe_allow_html=True)
                 st.markdown(f"<span style='color: #46d369; font-weight: bold;'>{veri['imdb']}</span> | <span style='font-size: 13px; color: #aaa;'>{veri['kategori']}</span>", unsafe_allow_html=True)
                 
-                kisa_ozet = veri["aciklama"][:80] + "..." if len(veriama) > 80 if "aciklama" in veri and len(veri["aciklama"]) > 80 else veri.get("aciklama", "")
+                # Açıklama metnini hatasız çeken ve kısaltan temiz blok:
+                aciklama_metni = veri.get("aciklama", "")
+                kisa_ozet = aciklama_metni[:80] + "..." if len(aciklama_metni) > 80 else aciklama_metni
                 st.markdown(f"<p style='font-size: 14px; color: #ddd;'>{kisa_ozet}</p>", unsafe_allow_html=True)
                 
                 if st.button("▶️ Oynat", key=f"oynat_{dosya}", use_container_width=True):
